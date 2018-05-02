@@ -26,33 +26,34 @@ class AIPlayer():
 
         m = Minimax(state)
         best_move, value, move_type = m.bestMove(self.difficulty, state, self.color, curr_player_flip, opp_player_flip, last_move)
-        copy_state = Utility.copy_the_board(state)
-        jitbo = False
-        if move_type == 1:
-            tmp = Utility.make_temp_move(best_move, copy_state, self.color)
-            if Utility.checkForConsecutives(tmp):
-                jitbo = True
-        if move_type == 2:
-            tmp = Utility.flip_the_board(state)
-            tmp = Utility.make_temp_move(best_move, tmp, self.color)
-            if Utility.checkForConsecutives(tmp):
-                jitbo = True
+        return best_move, move_type
+        # copy_state = Utility.copy_the_board(state)
+        # jitbo = False
+        # if move_type == 1:
+        #     tmp = Utility.make_temp_move(best_move, copy_state, self.color)
+        #     if Utility.checkForConsecutives(tmp):
+        #         jitbo = True
+        # if move_type == 2:
+        #     tmp = Utility.flip_the_board(state)
+        #     tmp = Utility.make_temp_move(best_move, tmp, self.color)
+        #     if Utility.checkForConsecutives(tmp):
+        #         jitbo = True
+        #
+        # if move_type == 3:
+        #     tmp = Utility.make_temp_move(best_move, copy_state, self.color)
+        #     tmp = Utility.flip_the_board(tmp)
+        #     if Utility.checkForConsecutives(tmp):
+        #         jitbo = True
+        #
+        # if jitbo:
+        #     return best_move, move_type
+        # else:
+        #     tmp_flip = Utility.flip_the_board(copy_state)
+        #     b4_has_3, col = Utility.checkForConsecutives_3(copy_state)
+        #     if b4_has_3:
+        #         return col, 2
+        #     af_has_3, col = Utility.checkForConsecutives_3(tmp_flip)
+        #     if af_has_3:
+        #         return col, 1
 
-        if move_type == 3:
-            tmp = Utility.make_temp_move(best_move, copy_state, self.color)
-            tmp = Utility.flip_the_board(tmp)
-            if Utility.checkForConsecutives(tmp):
-                jitbo = True
-
-        if jitbo:
-            return best_move, move_type
-        else:
-            tmp_flip = Utility.flip_the_board(copy_state)
-            b4_has_3, col = Utility.checkForConsecutives_3(copy_state)
-            if b4_has_3:
-                return col, 2
-            af_has_3, col = Utility.checkForConsecutives_3(tmp_flip)
-            if af_has_3:
-                return col, 1
-            return best_move, move_type
 
