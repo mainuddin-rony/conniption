@@ -1,3 +1,4 @@
+from game_board import GameBoard
 from minimax import Minimax
 from utility import Utility
 
@@ -19,13 +20,18 @@ class AIPlayer():
 
     def move(self, state, curr_player_flip, opp_player_flip, last_move):
         print("{0}'s turn.  {0} is {1}".format(self.name, self.color))
+        if self.color == 'x':
+            opp_player = 'o'
+        else:
+            opp_player = 'x'
 
         # sleeping for about 1 second makes it looks like he's thinking
         # time.sleep(random.randrange(8, 17, 1)/10.0)
         # return random.randint(0, 6)
 
         m = Minimax(state)
-        best_move, value, move_type = m.bestMove(self.difficulty, state, self.color, curr_player_flip, opp_player_flip, last_move)
+        gameBoard = GameBoard(self.color, opp_player, curr_player_flip, opp_player_flip, last_move, state)
+        best_move, value, move_type = m.bestMove(self.difficulty, gameBoard)
         return best_move, move_type
         # copy_state = Utility.copy_the_board(state)
         # jitbo = False

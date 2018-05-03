@@ -3,6 +3,7 @@ from human_player import HumanPlayer
 from ai_player import AIPlayer
 from random_player import RandomPlayer
 from utility import Utility
+from game_board import GameBoard
 
 class ConniptionBoardGame(object):
     """ Game object that holds state of Connect 4 board and game values
@@ -121,6 +122,7 @@ class ConniptionBoardGame(object):
             return
 
         # move is the column that player want's to play
+
         move, move_type = player.move(self.board, curr_player_flip, opp_player_flip, self.last_move)
 
         if move_type == 1:

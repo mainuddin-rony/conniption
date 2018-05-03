@@ -1,5 +1,5 @@
 import random
-
+from game_board import GameBoard
 
 class Minimax(object):
     """ Minimax object that takes a current connect four board state
@@ -12,109 +12,76 @@ class Minimax(object):
         # copy the board to self.board
         self.board = [x[:] for x in board]
 
-    def bestMove(self, depth, state, curr_player, curr_player_flip, opp_player_flip, last_move):
+    def bestMove(self, depth, gameBoard):
 
-
-
-        if curr_player == self.colors[0]:
-            opp_player = self.colors[1]
-        else:
-            opp_player = self.colors[0]
-
-
-
-        # enumerate all legal moves
-        # legal_moves_without_any_flip
-        legal_moves = {}
         for col in range(7):
             # if column i is a legal move...
-            if self.isLegalMove(col, state):
+            if self.isLegalMove(col, gameBoard.board):
                 # make the move in column 'col' for curr_player
-                temp = self.makeMove(state, col, curr_player)
+                temp = self.makeMove(gameBoard.board, col, gameBoard.curr_player)
+                gameBoard.set_selected_move(col)
                 tmp_last_move = col
-                legal_moves[col] = -self.search(depth - 1, temp, opp_player, opp_player_flip, curr_player_flip,
-                                                tmp_last_move)
+                boardInstance = GameBoard(gameBoard.opp_player, gameBoard.curr_player, gameBoard.opp_player_flip, gameBoard.curr_player_flip, tmp_last_move, temp)
+
+                alpha = -self.iterative_search(depth - 1, boardInstance)
+                boardInstance.set_alpha_value(alpha)
+                boardInstance.set_move_type(1)
+                boardInstance.set_selected_move(col)
+                gameBoard.add_instance(boardInstance)
 
         # legal_moves_with_move_first_then_Flip
-        legal_moves_with_flip_last = {}
-        if curr_player_flip > 0:
+
+        if gameBoard.curr_player_flip > 0:
             for col in range(7):
-                if self.isLegalMove(col, state):
-                    temp = self.makeMove(state, col, curr_player)
+                if self.isLegalMove(col, gameBoard.board):
+                    temp = self.makeMove(gameBoard.board, col, gameBoard.curr_player)
                     tmp_last_move = 'flip'
                     flipped_board = self.flip_the_board(temp)
                     if not self.are_boards_same(temp, flipped_board):
-                        legal_moves_with_flip_last[col] = - self.search(depth - 1, flipped_board, opp_player,
-                                                                        opp_player_flip, curr_player_flip - 1,
-                                                                        tmp_last_move)
+                        boardInstance = GameBoard(gameBoard.opp_player, gameBoard.curr_player,
+                                                  gameBoard.opp_player_flip, gameBoard.curr_player_flip - 1, tmp_last_move,
+                                                  flipped_board)
+
+                        alpha = -self.iterative_search(depth - 1, boardInstance)
+                        boardInstance.set_alpha_value(alpha)
+                        boardInstance.set_move_type(3)
+                        boardInstance.set_selected_move(col)
+                        gameBoard.add_instance(boardInstance)
 
         # legal_moves_with_flip_first_then_move
-        legal_moves_with_flip_first = {}
-        if curr_player_flip > 0 and last_move != 'flip':
-            flipped_board = self.flip_the_board(state)
-            if not self.are_boards_same(state, flipped_board):
+
+        if gameBoard.curr_player_flip > 0 and gameBoard.last_move != 'flip':
+            flipped_board = self.flip_the_board(gameBoard.board)
+            if not self.are_boards_same(gameBoard.board, flipped_board):
                 for col in range(7):
                     # if column i is a legal move...
                     if self.isLegalMove(col, flipped_board):
                         # make the move in column 'col' for curr_player
-                        temp = self.makeMove(flipped_board, col, curr_player)
+                        temp = self.makeMove(flipped_board, col, gameBoard.curr_player)
                         tmp_last_move = col
-                        legal_moves_with_flip_first[col] = -self.search(depth - 1, temp, opp_player, opp_player_flip,
-                                                                        curr_player_flip - 1, tmp_last_move)
 
-        # legal_moves_with_flip_move_flip = {}
-        # if curr_player_flip > 1 and last_move != 'flip':
-        #     flipped_board = self.flip_the_board(state)
-        #     if not self.are_boards_same(state, flipped_board):
-        #         for col in range(7):
-        #             # if column i is a legal move...
-        #             if self.isLegalMove(col, flipped_board):
-        #                 # make the move in column 'col' for curr_player
-        #                 temp = self.makeMove(flipped_board, col, curr_player)
-        #                 temp_flip = self.flip_the_board(temp)
-        #                 tmp_last_move = 'flip'
-        #                 legal_moves_with_flip_move_flip[col] = -self.search(depth - 1, temp_flip, opp_player,
-        #                                                                     opp_player_flip,
-        #                                                                     curr_player_flip - 2, tmp_last_move)
+                        boardInstance = GameBoard(gameBoard.opp_player, gameBoard.curr_player,
+                                                  gameBoard.opp_player_flip, gameBoard.curr_player_flip - 1,
+                                                  tmp_last_move,
+                                                  temp)
+
+                        alpha = -self.iterative_search(depth - 1, boardInstance)
+                        boardInstance.set_alpha_value(alpha)
+                        boardInstance.set_move_type(2)
+                        boardInstance.set_selected_move(col)
+                        gameBoard.add_instance(boardInstance)
+
+
 
         best_alpha = -99999999
         best_move = None
         move_type = None  # 1 for move only, 2 for flip first then move and 3 for move first then flip
 
-        moves = legal_moves.items()
-        random.shuffle(list(moves))
-        for move, alpha in moves:
-            if alpha >= best_alpha:
-                best_alpha = alpha
-                best_move = move
-                move_type = 1
-
-        if len(legal_moves_with_flip_first) > 0:
-            flip_moves = legal_moves_with_flip_first.items()
-            random.shuffle(list(flip_moves))
-            for move, alpha in flip_moves:
-                if alpha > best_alpha:
-                    best_alpha = alpha
-                    best_move = move
-                    move_type = 2
-
-        if len(legal_moves_with_flip_last) > 0:
-            all_moves = legal_moves_with_flip_last.items()
-            random.shuffle(list(all_moves))
-            for move, alpha in all_moves:
-                if alpha > best_alpha:
-                    best_alpha = alpha
-                    best_move = move
-                    move_type = 3
-
-        # if len(legal_moves_with_flip_move_flip) > 0:
-        #     all_moves = legal_moves_with_flip_move_flip.items()
-        #     random.shuffle(list(all_moves))
-        #     for move, alpha in all_moves:
-        #         if alpha > best_alpha:
-        #             best_alpha = alpha
-        #             best_move = move
-        #             move_type = 4
+        for instance in gameBoard.instances:
+            if instance.alpha >= best_alpha:
+                best_alpha = instance.alpha
+                best_move = instance.selected_move
+                move_type = instance.move_type
 
         return best_move, best_alpha, move_type
 
@@ -381,3 +348,60 @@ class Minimax(object):
                     return False
 
         return True
+
+    def iterative_search(self, depth, boardInstance):
+        for i in range(7):
+            if self.isLegalMove(i, boardInstance.board):
+                temp = self.makeMove(boardInstance.board, i, boardInstance.curr_player)
+                last_move = i
+                newBoard = GameBoard(boardInstance.opp_player, boardInstance.curr_player, boardInstance.opp_player_flip,
+                                     boardInstance.curr_player_flip, last_move, temp)
+                newBoard.set_move_type(1)
+                newBoard.set_selected_move(i)
+                boardInstance.add_instance(newBoard)
+
+        # legal_moves_with_flip_first_then_move
+
+        if boardInstance.curr_player_flip > 0 and boardInstance.last_move != 'flip':
+            flipped_board = self.flip_the_board(boardInstance.board)
+            if not self.are_boards_same(boardInstance.board, flipped_board):
+                for i in range(7):
+                    if self.isLegalMove(i, flipped_board):
+                        last_move = i
+                        temp = self.makeMove(flipped_board, i, boardInstance.curr_player)
+                        newBoard = GameBoard(boardInstance.opp_player, boardInstance.curr_player,
+                                             boardInstance.opp_player_flip,
+                                             boardInstance.curr_player_flip - 1, last_move, temp)
+                        newBoard.set_move_type(2)
+                        newBoard.set_selected_move(i)# 2 --> flip first then move
+                        boardInstance.add_instance(newBoard)
+
+        # legal_moves_with_move_first_then_flip
+
+        if boardInstance.curr_player_flip > 0:
+            for col in range(7):
+                if self.isLegalMove(col, boardInstance.board):
+                    temp = self.makeMove(boardInstance.board, col, boardInstance.curr_player)
+                    flipped_board = self.flip_the_board(temp)
+                    if not self.are_boards_same(temp, flipped_board):
+                        last_move = 'flip'
+                        newBoard = GameBoard(boardInstance.opp_player, boardInstance.curr_player,
+                                             boardInstance.opp_player_flip,
+                                             boardInstance.curr_player_flip - 1, last_move, temp)
+                        newBoard.set_move_type(3)
+                        newBoard.set_selected_move(col)# 3 --> move first then flip
+                        boardInstance.add_instance(newBoard)
+
+        if depth == 0 or len(boardInstance.instances) == 0 or self.gameIsOver(boardInstance.board):
+            # return the heuristic value of node
+            return self.value(boardInstance.board, boardInstance.curr_player)
+
+
+        alpha = -99999999
+        for child in boardInstance.instances:
+            if child is None:
+                print("child == None (search)")
+            tmp_alpha = -self.iterative_search(depth - 1, child)
+            child.set_alpha_value(tmp_alpha)
+            alpha = max(alpha, tmp_alpha)
+        return alpha
