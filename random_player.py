@@ -16,7 +16,7 @@ class RandomPlayer():
     def move(self, state, curr_player, opp_player, last_move):
         print("{0}'s turn.  {0} is {1}".format(self.name, self.color))
         column = None
-        flip_list = [1] * 70 + [2] * 15 + [3] * 15
+        flip_list = [1] * 70 + [2] * 15 + [3] * 15 # weighted flip choice list
         condition = True
 
         while condition:

@@ -1,7 +1,10 @@
 from utility import Utility
 
-
 class HumanPlayer():
+    """
+    This is the class for Human Player. Based on the number of flip available it collects input from the user and
+    sends to ConniptionBoardGame class
+    """
     type = None  # possible types are "Human" and "AI"
     name = None
     color = None
@@ -15,11 +18,13 @@ class HumanPlayer():
 
     def move(self, state, curr_player_flip, opp_player_flip, last_move):
         print("{0}'s turn.  {0} is {1}".format(self.name, self.color))
+        # make a copy of the current board
         copy_board = Utility.copy_the_board(state)
         flip_number = self.flip
 
         # check if player has flip remained
         if flip_number > 0:
+            # check if the last move is flip or not
             if last_move != 'flip':
 
                 choice, temp_board, flip_number = self.choose_flip_option(copy_board, flip_number)
@@ -63,6 +68,12 @@ class HumanPlayer():
 
 
     def choose_column(self, board, disc):
+        """
+        Gives user option to choose his move by take input the number of cloumn
+        :param board: Current Board
+        :param disc: Current player's disk
+        :return: User move and the new board after the move
+        """
         column = None
         while column == None:
             try:
@@ -85,6 +96,12 @@ class HumanPlayer():
         return column, temp_board
 
     def choose_flip_option(self, temp_board, flip_number):
+        """
+        Ask user where he likes to flip the board
+        :param temp_board: Current Game Board
+        :param flip_number: Number of available flip now
+        :return: User flip choice, new board after flip (if user flips it) and available flip number now
+        """
         while True:
             flip_choice = input("Do you want to flip the board(yes/no): ")
 

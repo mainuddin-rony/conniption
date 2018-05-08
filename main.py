@@ -2,22 +2,25 @@ from conniptionboardgame import ConniptionBoardGame
 
 
 def main():
+    """
+    Initialize Game Board and Player Settings. start_new_game restarts the game from beginning
+    """
     conniption = ConniptionBoardGame()
     player1 = conniption.players[0]
     player2 = conniption.players[1]
 
-    score_board = [0, 0, 0]  # [p1 wins, p2 wins, ties]
+    score_board = [0, 0, 0]  # [player1 wins, player2 wins, ties]
     count = 1
 
-    while count < 21:
-        conniption.printState()
-        while not conniption.finished:
-            conniption.nextMove()
+    while count < 101:
+        conniption.print_current_board()
+        while not conniption.is_game_finished:
+            conniption.choose_next_move()
 
-        conniption.findFours()
+        conniption.identify_connecting_fours()
         conniption.print_final_board()
 
-        if conniption.winner == None:
+        if conniption.winner is None:
             score_board[2] += 1
 
         elif conniption.winner == player1:
@@ -26,18 +29,18 @@ def main():
         elif conniption.winner == player2:
             score_board[1] += 1
 
-        printStats(player1, player2, score_board)
+        print_score_board(player1, player2, score_board)
         count += 1
 
-        conniption.newGame()
+        conniption.start_new_game()
 
 
-def printStats(player1, player2, win_counts):
+def print_score_board(player1, player2, win_counts):
     print("\n")
     print("{0}: {1} wins, {2}: {3} wins, {4} ties".format(player1.name,
                                                           win_counts[0], player2.name, win_counts[1], win_counts[2]))
     print("\n")
 
 
-if __name__ == "__main__":  # Default "main method" idiom.
+if __name__ == "__main__":
     main()

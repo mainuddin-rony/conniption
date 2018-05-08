@@ -1,4 +1,8 @@
 class GameBoard():
+    """
+    GameBoard Class keeps track of the current board instance like who is the current player of this board, who is
+    the opponent, what was the last move before this board, how many flip requires, what is the value of this board etc
+    """
     curr_player = None
     opp_player = None
     curr_player_flip = None

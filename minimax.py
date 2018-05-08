@@ -1,12 +1,12 @@
-import random
 from game_board import GameBoard
 
-class Minimax(object):
-    """ Minimax object that takes a current connect four board state
-    """
 
+class Minimax(object):
+    """
+    Implementation of MiniMax algorithm on current board
+    """
     board = None
-    colors = ["x", "o"]
+    disks = ["x", "o"]
 
     def __init__(self, board):
         # copy the board to self.board
@@ -15,10 +15,10 @@ class Minimax(object):
     def bestMove(self, depth, gameBoard):
 
         for col in range(7):
-            # if column i is a legal move...
-            if self.isLegalMove(col, gameBoard.board):
+            # if column col is a legal move...
+            if self.is_legal_move(col, gameBoard.board):
                 # make the move in column 'col' for curr_player
-                temp = self.makeMove(gameBoard.board, col, gameBoard.curr_player)
+                temp = self.make_the_move(gameBoard.board, col, gameBoard.curr_player)
                 gameBoard.set_selected_move(col)
                 tmp_last_move = col
                 boardInstance = GameBoard(gameBoard.opp_player, gameBoard.curr_player, gameBoard.opp_player_flip, gameBoard.curr_player_flip, tmp_last_move, temp)
@@ -33,8 +33,8 @@ class Minimax(object):
 
         if gameBoard.curr_player_flip > 0:
             for col in range(7):
-                if self.isLegalMove(col, gameBoard.board):
-                    temp = self.makeMove(gameBoard.board, col, gameBoard.curr_player)
+                if self.is_legal_move(col, gameBoard.board):
+                    temp = self.make_the_move(gameBoard.board, col, gameBoard.curr_player)
                     tmp_last_move = 'flip'
                     flipped_board = self.flip_the_board(temp)
                     if not self.are_boards_same(temp, flipped_board):
@@ -55,9 +55,9 @@ class Minimax(object):
             if not self.are_boards_same(gameBoard.board, flipped_board):
                 for col in range(7):
                     # if column i is a legal move...
-                    if self.isLegalMove(col, flipped_board):
+                    if self.is_legal_move(col, flipped_board):
                         # make the move in column 'col' for curr_player
-                        temp = self.makeMove(flipped_board, col, gameBoard.curr_player)
+                        temp = self.make_the_move(flipped_board, col, gameBoard.curr_player)
                         tmp_last_move = col
 
                         boardInstance = GameBoard(gameBoard.opp_player, gameBoard.curr_player,
@@ -85,107 +85,8 @@ class Minimax(object):
 
         return best_move, best_alpha, move_type
 
-    def search(self, depth, state, curr_player, curr_player_flip, opp_player_flip, last_move):
-        """ Searches the tree at depth 'depth'
-            By default, the state is the board, and curr_player is whomever
-            called this search
 
-            Returns the alpha value
-        """
-
-        # enumerate all legal moves from this state
-
-        # legal_moves_without_any_flip
-        legal_moves = []
-        for i in range(7):
-            # if column i is a legal move...
-            if self.isLegalMove(i, state):
-                # make the move in column i for curr_player
-                temp = self.makeMove(state, i, curr_player)
-                legal_moves.append(temp)
-
-        # legal_moves_with_flip_first_then_move
-        legal_moves_with_flip_first = []
-        if curr_player_flip > 0 and last_move != 'flip':
-            flipped_board = self.flip_the_board(state)
-            if not self.are_boards_same(state, flipped_board):
-                for i in range(7):
-                    # if column i is a legal move...
-                    if self.isLegalMove(i, flipped_board):
-                        # make the move in column i for curr_player
-                        temp = self.makeMove(flipped_board, i, curr_player)
-                        legal_moves_with_flip_first.append(temp)
-
-        # legal_moves_with_move_first_then_flip
-        legal_moves_with_flip_last = []
-        if curr_player_flip > 0:
-            for col in range(7):
-                if self.isLegalMove(col, state):
-                    temp = self.makeMove(state, col, curr_player)
-                    flipped_board = self.flip_the_board(temp)
-                    if not self.are_boards_same(temp, flipped_board):
-                        legal_moves_with_flip_last.append(flipped_board)
-
-        # legal_moves_with_flip_move_flip = []
-        # if curr_player_flip > 1 and last_move != 'flip':
-        #     flipped_board = self.flip_the_board(state)
-        #     if not self.are_boards_same(state, flipped_board):
-        #         for i in range(7):
-        #             # if column i is a legal move...
-        #             if self.isLegalMove(i, flipped_board):
-        #                 # make the move in column i for curr_player
-        #                 temp = self.makeMove(flipped_board, i, curr_player)
-        #                 temp_flip = self.flip_the_board(temp)
-        #                 if not self.are_boards_same(state, temp_flip):
-        #                     legal_moves_with_flip_move_flip.append(temp_flip)
-
-        # if this node (state) is a terminal node or depth == 0...
-        if depth == 0 or (len(legal_moves) == 0 and len(legal_moves_with_flip_last) == 0 and len(
-                legal_moves_with_flip_first) == 0) or self.gameIsOver(
-                state):
-            # return the heuristic value of node
-            return self.value(state, curr_player)
-
-        # determine opponent's color
-        if curr_player == self.colors[0]:
-            opp_player = self.colors[1]
-        else:
-            opp_player = self.colors[0]
-
-        alpha = -99999999
-        for child in legal_moves:
-            if child is None:
-                print("child == None (search)")
-            tmp_last_move = 'col'
-            alpha = max(alpha,
-                        -self.search(depth - 1, child, opp_player, opp_player_flip, curr_player_flip, tmp_last_move))
-
-        if len(legal_moves_with_flip_first) > 0:
-            for child in legal_moves_with_flip_first:
-                if child is None:
-                    print("child == None (search)")
-                tmp_last_move = 'col'
-                alpha = max(alpha, -self.search(depth - 1, child, opp_player, opp_player_flip, curr_player_flip - 1,
-                                                tmp_last_move))
-
-        if len(legal_moves_with_flip_last) > 0:
-            for child in legal_moves_with_flip_last:
-                if child is None:
-                    print("child == None (search)")
-                tmp_last_move = 'flip'
-                alpha = max(alpha, -self.search(depth - 1, child, opp_player, opp_player_flip, curr_player_flip - 1,
-                                                tmp_last_move))
-
-        # if len(legal_moves_with_flip_move_flip) > 0:
-        #     for child in legal_moves_with_flip_move_flip:
-        #         if child is None:
-        #             print("child == None (search)")
-        #         tmp_last_move = 'flip'
-        #         alpha = max(alpha, -self.search(depth - 1, child, opp_player, opp_player_flip, curr_player_flip - 2,
-        #                                         tmp_last_move))
-        return alpha
-
-    def isLegalMove(self, column, state):
+    def is_legal_move(self, column, state):
         """ Boolean function to check if a move (column) is a legal move
         """
 
@@ -197,15 +98,15 @@ class Minimax(object):
         # if we get here, the column is full
         return False
 
-    def gameIsOver(self, state):
-        if self.checkForStreak(state, self.colors[0], 4) >= 1:
+    def is_game_over(self, state):
+        if self.check_for_streak(state, self.disks[0], 4) >= 1:
             return True
-        elif self.checkForStreak(state, self.colors[1], 4) >= 1:
+        elif self.check_for_streak(state, self.disks[1], 4) >= 1:
             return True
         else:
             return False
 
-    def makeMove(self, state, column, color):
+    def make_the_move(self, state, column, color):
         """ Change a state object to reflect a player, denoted by color,
             making a move at column 'column'
 
@@ -218,103 +119,114 @@ class Minimax(object):
                 temp[i][column] = color
                 return temp
 
-    def value(self, state, color):
+    def calculate_board_value(self, board, disk):
         """ Simple heuristic to evaluate board configurations
-            Heuristic is (num of 4-in-a-rows)*99999 + (num of 3-in-a-rows)*100 + 
+            goodness = (current player's four-in-a-rows)*100000 + (current player's three-in-a-rows)*100 + (current player's two-in-a-rows)
+            OR
+            if the opponent has 1 or more four in a rows, then goodness = -100000
+        """
+        if disk == self.disks[0]:
+            o_color = self.disks[1]
+        else:
+            o_color = self.disks[0]
+
+        curr_fours = self.check_for_streak(board, disk, 4)
+        curr_threes = self.check_for_streak(board, disk, 3)
+        curr_twos = self.check_for_streak(board, disk, 2)
+
+        opp_fours = self.check_for_streak(board, o_color, 4)
+        opp_threes = self.check_for_streak(board, o_color, 3)
+        opp_twos = self.check_for_streak(board, o_color, 2)
+
+        """
+        (num of 4-in-a-rows)*99999 + (num of 3-in-a-rows)*100 + 
             (num of 2-in-a-rows)*10 - (num of opponent 4-in-a-rows)*99999 - (num of opponent
             3-in-a-rows)*100 - (num of opponent 2-in-a-rows)*10
         """
-        if color == self.colors[0]:
-            o_color = self.colors[1]
-        else:
-            o_color = self.colors[0]
 
-        my_fours = self.checkForStreak(state, color, 4)
-        my_threes = self.checkForStreak(state, color, 3)
-        my_twos = self.checkForStreak(state, color, 2)
-        opp_fours = self.checkForStreak(state, o_color, 4)
-        # opp_threes = self.checkForStreak(state, o_color, 3)
-        # opp_twos = self.checkForStreak(state, o_color, 2)
+        # heuristic = (curr_fours)*99999 + (curr_threes)*100 + curr_twos * 10 - (opp_fours)*99999 - (opp_threes)*100 - (opp_twos)*10
+
         if opp_fours > 0:
             return -100000
         else:
-            return my_fours * 100000 + my_threes * 100 + my_twos
+            return curr_fours * 100000 + curr_threes * 100 + curr_twos
+        # return heuristic
 
-    def checkForStreak(self, state, color, streak):
+    def check_for_streak(self, board, disk, streak):
         count = 0
         # for each piece in the board...
         for i in range(6):
             for j in range(7):
                 # ...that is of the color we're looking for...
-                if state[i][j].lower() == color.lower():
+                if board[i][j].lower() == disk.lower():
                     # check if a vertical streak starts at (i, j)
-                    count += self.verticalStreak(i, j, state, streak)
+                    count += self.check_vertical_streak(i, j, board, streak)
 
                     # check if a horizontal four-in-a-row starts at (i, j)
-                    count += self.horizontalStreak(i, j, state, streak)
+                    count += self.check_horizontal_streak(i, j, board, streak)
 
                     # check if a diagonal (either way) four-in-a-row starts at (i, j)
-                    count += self.diagonalCheck(i, j, state, streak)
+                    count += self.check_diagonal_streak(i, j, board, streak)
         # return the sum of streaks of length 'streak'
         return count
 
-    def verticalStreak(self, row, col, state, streak):
-        consecutiveCount = 0
+    def check_vertical_streak(self, row, col, board, streak):
+        in_a_row_count = 0
         for i in range(row, 6):
-            if state[i][col].lower() == state[row][col].lower():
-                consecutiveCount += 1
+            if board[i][col].lower() == board[row][col].lower():
+                in_a_row_count += 1
             else:
                 break
 
-        if consecutiveCount >= streak:
+        if in_a_row_count >= streak:
             return 1
         else:
             return 0
 
-    def horizontalStreak(self, row, col, state, streak):
-        consecutiveCount = 0
+    def check_horizontal_streak(self, row, col, board, streak):
+        in_a_row_count = 0
         for j in range(col, 7):
-            if state[row][j].lower() == state[row][col].lower():
-                consecutiveCount += 1
+            if board[row][j].lower() == board[row][col].lower():
+                in_a_row_count += 1
             else:
                 break
 
-        if consecutiveCount >= streak:
+        if in_a_row_count >= streak:
             return 1
         else:
             return 0
 
-    def diagonalCheck(self, row, col, state, streak):
+    def check_diagonal_streak(self, row, col, board, streak):
 
         total = 0
         # check for diagonals with positive slope
-        consecutiveCount = 0
+        in_a_row_count = 0
         j = col
         for i in range(row, 6):
             if j > 6:
                 break
-            elif state[i][j].lower() == state[row][col].lower():
-                consecutiveCount += 1
+            elif board[i][j].lower() == board[row][col].lower():
+                in_a_row_count += 1
             else:
                 break
             j += 1  # increment column when row is incremented
 
-        if consecutiveCount >= streak:
+        if in_a_row_count >= streak:
             total += 1
 
         # check for diagonals with negative slope
-        consecutiveCount = 0
+        in_a_row_count = 0
         j = col
         for i in range(row, -1, -1):
             if j > 6:
                 break
-            elif state[i][j].lower() == state[row][col].lower():
-                consecutiveCount += 1
+            elif board[i][j].lower() == board[row][col].lower():
+                in_a_row_count += 1
             else:
                 break
             j += 1  # increment column when row is incremented
 
-        if consecutiveCount >= streak:
+        if in_a_row_count >= streak:
             total += 1
 
         return total
@@ -351,8 +263,8 @@ class Minimax(object):
 
     def iterative_search(self, depth, boardInstance):
         for i in range(7):
-            if self.isLegalMove(i, boardInstance.board):
-                temp = self.makeMove(boardInstance.board, i, boardInstance.curr_player)
+            if self.is_legal_move(i, boardInstance.board):
+                temp = self.make_the_move(boardInstance.board, i, boardInstance.curr_player)
                 last_move = i
                 newBoard = GameBoard(boardInstance.opp_player, boardInstance.curr_player, boardInstance.opp_player_flip,
                                      boardInstance.curr_player_flip, last_move, temp)
@@ -366,9 +278,9 @@ class Minimax(object):
             flipped_board = self.flip_the_board(boardInstance.board)
             if not self.are_boards_same(boardInstance.board, flipped_board):
                 for i in range(7):
-                    if self.isLegalMove(i, flipped_board):
+                    if self.is_legal_move(i, flipped_board):
                         last_move = i
-                        temp = self.makeMove(flipped_board, i, boardInstance.curr_player)
+                        temp = self.make_the_move(flipped_board, i, boardInstance.curr_player)
                         newBoard = GameBoard(boardInstance.opp_player, boardInstance.curr_player,
                                              boardInstance.opp_player_flip,
                                              boardInstance.curr_player_flip - 1, last_move, temp)
@@ -380,8 +292,8 @@ class Minimax(object):
 
         if boardInstance.curr_player_flip > 0:
             for col in range(7):
-                if self.isLegalMove(col, boardInstance.board):
-                    temp = self.makeMove(boardInstance.board, col, boardInstance.curr_player)
+                if self.is_legal_move(col, boardInstance.board):
+                    temp = self.make_the_move(boardInstance.board, col, boardInstance.curr_player)
                     flipped_board = self.flip_the_board(temp)
                     if not self.are_boards_same(temp, flipped_board):
                         last_move = 'flip'
@@ -392,10 +304,9 @@ class Minimax(object):
                         newBoard.set_selected_move(col)# 3 --> move first then flip
                         boardInstance.add_instance(newBoard)
 
-        if depth == 0 or len(boardInstance.instances) == 0 or self.gameIsOver(boardInstance.board):
+        if depth == 0 or len(boardInstance.instances) == 0 or self.is_game_over(boardInstance.board):
             # return the heuristic value of node
-            return self.value(boardInstance.board, boardInstance.curr_player)
-
+            return self.calculate_board_value(boardInstance.board, boardInstance.curr_player)
 
         alpha = -99999999
         for child in boardInstance.instances:
