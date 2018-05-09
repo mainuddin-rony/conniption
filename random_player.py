@@ -4,17 +4,17 @@ import random
 class RandomPlayer():
     type = None  # possible types are "Human" and "AI"
     name = None
-    color = None
+    disk = None
     flip = None
 
-    def __init__(self, name, color, flip):
+    def __init__(self, name, disk, flip):
         self.type = "Random"
         self.name = name
-        self.color = color
+        self.disk = disk
         self.flip = flip
 
     def move(self, state, curr_player, opp_player, last_move):
-        print("{0}'s turn.  {0} is {1}".format(self.name, self.color))
+        print("{0}'s turn.  {0} is {1}".format(self.name, self.disk))
         column = None
         flip_list = [1] * 70 + [2] * 15 + [3] * 15 # weighted flip choice list
         condition = True
