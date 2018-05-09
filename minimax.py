@@ -106,8 +106,8 @@ class Minimax(object):
         else:
             return False
 
-    def make_the_move(self, state, column, color):
-        """ Change a state object to reflect a player, denoted by color,
+    def make_the_move(self, state, column, disk):
+        """ Change a state object to reflect a player, denoted by disk,
             making a move at column 'column'
 
             Returns a copy of new state array with the added move
@@ -116,7 +116,7 @@ class Minimax(object):
         temp = [x[:] for x in state]
         for i in range(6):
             if temp[i][column] == ' ':
-                temp[i][column] = color
+                temp[i][column] = disk
                 return temp
 
     def calculate_board_value(self, board, disk):
@@ -126,17 +126,17 @@ class Minimax(object):
             if the opponent has 1 or more four in a rows, then goodness = -100000
         """
         if disk == self.disks[0]:
-            o_color = self.disks[1]
+            o_disk = self.disks[1]
         else:
-            o_color = self.disks[0]
+            o_disk = self.disks[0]
 
         curr_fours = self.check_for_streak(board, disk, 4)
         curr_threes = self.check_for_streak(board, disk, 3)
         curr_twos = self.check_for_streak(board, disk, 2)
 
-        opp_fours = self.check_for_streak(board, o_color, 4)
-        opp_threes = self.check_for_streak(board, o_color, 3)
-        opp_twos = self.check_for_streak(board, o_color, 2)
+        opp_fours = self.check_for_streak(board, o_disk, 4)
+        opp_threes = self.check_for_streak(board, o_disk, 3)
+        opp_twos = self.check_for_streak(board, o_disk, 2)
 
         """
         (num of 4-in-a-rows)*99999 + (num of 3-in-a-rows)*100 + 
@@ -157,7 +157,7 @@ class Minimax(object):
         # for each piece in the board...
         for i in range(6):
             for j in range(7):
-                # ...that is of the color we're looking for...
+                # ...that is of the disk we're looking for...
                 if board[i][j].lower() == disk.lower():
                     # check if a vertical streak starts at (i, j)
                     count += self.check_vertical_streak(i, j, board, streak)
