@@ -34,10 +34,10 @@ class Utility():
         print("\t  1   2   3   4   5   6   7 ")
 
     @classmethod
-    def make_temp_move(cls, column, board, color):
+    def make_temp_move(cls, column, board, disk):
         for i in range(6):
             if board[i][column] == ' ':
-                board[i][column] = color
+                board[i][column] = disk
                 break
 
         return board
