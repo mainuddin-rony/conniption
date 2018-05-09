@@ -7,17 +7,17 @@ class HumanPlayer():
     """
     type = None  # possible types are "Human" and "AI"
     name = None
-    color = None
+    disk = None
     flip = None
 
-    def __init__(self, name, color, flip):
+    def __init__(self, name, disk, flip):
         self.type = "Human"
         self.name = name
-        self.color = color
+        self.disk = disk
         self.flip = flip
 
     def move(self, state, curr_player_flip, opp_player_flip, last_move):
-        print("{0}'s turn.  {0} is {1}".format(self.name, self.color))
+        print("{0}'s turn.  {0} is {1}".format(self.name, self.disk))
         # make a copy of the current board
         copy_board = Utility.copy_the_board(state)
         flip_number = self.flip
@@ -30,7 +30,7 @@ class HumanPlayer():
                 choice, temp_board, flip_number = self.choose_flip_option(copy_board, flip_number)
 
                 if choice:
-                    column, temp_board = self.choose_column(temp_board, self.color)
+                    column, temp_board = self.choose_column(temp_board, self.disk)
 
                     if flip_number > 0:
                         choice, temp_board, flip_number = self.choose_flip_option(temp_board, flip_number)
@@ -43,7 +43,7 @@ class HumanPlayer():
                         print(self.name + " has used all the flips.")
                         return column, 2
                 else:
-                    column, temp_board = self.choose_column(copy_board, self.color)
+                    column, temp_board = self.choose_column(copy_board, self.disk)
                     choice, temp_board, flip_number = self.choose_flip_option(temp_board, flip_number)
 
                     if choice:
@@ -53,7 +53,7 @@ class HumanPlayer():
 
             else:
                 print("As the opponent's last move was a flip you can't choose a flip now.")
-                column, temp_board = self.choose_column(copy_board, self.color)
+                column, temp_board = self.choose_column(copy_board, self.disk)
                 choice, temp_board, flip_number = self.choose_flip_option(temp_board, flip_number)
 
                 if choice:
@@ -63,7 +63,7 @@ class HumanPlayer():
 
         else:
             print(self.name + " has used up all the flips. No flip available.")
-            column, temp_board = self.choose_column(copy_board, self.color)
+            column, temp_board = self.choose_column(copy_board, self.disk)
             return column, 1
 
 
