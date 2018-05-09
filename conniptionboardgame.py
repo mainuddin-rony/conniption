@@ -137,7 +137,7 @@ class ConniptionBoardGame(object):
             self.last_move = move
             for i in range(6):
                 if self.board[i][move] == ' ':
-                    self.board[i][move] = player.color
+                    self.board[i][move] = player.disk
                     Utility.print_the_board(self.board)
                     self.switch_players_turn()
                     self.is_there_any_connecting_four()
@@ -154,7 +154,7 @@ class ConniptionBoardGame(object):
             print("Flip remains for %s is %d: " % (player.name, player.flip))
             for i in range(6):
                 if self.board[i][move] == ' ':
-                    self.board[i][move] = player.color
+                    self.board[i][move] = player.disk
                     Utility.print_the_board(self.board)
                     self.switch_players_turn()
                     self.is_there_any_connecting_four()
@@ -170,7 +170,7 @@ class ConniptionBoardGame(object):
             print("Flip remains for %s is %d: " % (player.name, player.flip))
             for i in range(6):
                 if self.board[i][move] == ' ':
-                    self.board[i][move] = player.color
+                    self.board[i][move] = player.disk
                     self.board = self.flip_the_board(self.board)
                     Utility.print_the_board(self.board)
                     self.switch_players_turn()
@@ -188,7 +188,7 @@ class ConniptionBoardGame(object):
             print("Flip remains for %s is %d: " % (player.name, player.flip))
             for i in range(6):
                 if self.board[i][move] == ' ':
-                    self.board[i][move] = player.color
+                    self.board[i][move] = player.disk
                     self.board = self.flip_the_board(self.board)
                     Utility.print_the_board(self.board)
                     self.switch_players_turn()
@@ -273,7 +273,7 @@ class ConniptionBoardGame(object):
 
         if in_a_row_count >= 4:
             four_in_a_row = True
-            if self.players[0].color.lower() == self.board[row][col].lower():
+            if self.players[0].disk.lower() == self.board[row][col].lower():
                 self.winner = self.players[0]
             else:
                 self.winner = self.players[1]
@@ -298,7 +298,7 @@ class ConniptionBoardGame(object):
 
         if in_a_row_count >= 4:
             four_in_a_row = True
-            if self.players[0].color.lower() == self.board[row][col].lower():
+            if self.players[0].disk.lower() == self.board[row][col].lower():
                 self.winner = self.players[0]
             else:
                 self.winner = self.players[1]
@@ -331,7 +331,7 @@ class ConniptionBoardGame(object):
         if in_a_row_count >= 4:
             count += 1
             slope = 'positive'
-            if self.players[0].color.lower() == self.board[row][col].lower():
+            if self.players[0].disk.lower() == self.board[row][col].lower():
                 self.winner = self.players[0]
             else:
                 self.winner = self.players[1]
@@ -351,7 +351,7 @@ class ConniptionBoardGame(object):
         if in_a_row_count >= 4:
             count += 1
             slope = 'negative'
-            if self.players[0].color.lower() == self.board[row][col].lower():
+            if self.players[0].disk.lower() == self.board[row][col].lower():
                 self.winner = self.players[0]
             else:
                 self.winner = self.players[1]
