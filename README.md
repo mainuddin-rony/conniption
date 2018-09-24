@@ -27,7 +27,9 @@ Utility.py: It contains some utility functions like copy the game board, flippin
 
 # Choosing Heuristic for Minimax
 I tried with couple of heuristics for the minimax algorithm. With trial and error, I finally came up with two heuristics which produced primarily a good  result. 
+
 Heuristic 1: (4-in-a-rows of X)*99999 + (3-in-a-rows of X)*100 + (2-in-a-rows of X)*10 - (4-in-a-rows of O)*99999 - (3-in-a-rows of O)*100 - (2-in-a-rows of O)*10
+
 Heuristic 2: (four-in-a-rows for X)*100000 + (three-in-a-rows for X)*100 + (two-in-a-rows for X) Or if the opponent has 1 or more four in a rows, then return -100000
 
 I played the AI player against a random player 100 times when my AI went first, and also 100 times when it went later with both the heuristics.
